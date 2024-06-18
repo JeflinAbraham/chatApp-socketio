@@ -5,12 +5,15 @@ import { Label } from '@/components/ui/label';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/components/ui/use-toast";
 import axios from 'axios'
-import { Variable } from 'lucide-react';
+import { useDispatch } from 'react-redux';
+import { setUser, setToken } from '@/redux/userSlice';
+
 
 function signup() {
     const [formData, setFormData] = useState({});
     const navigate = useNavigate();
     const { toast } = useToast()
+    const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
@@ -20,8 +23,10 @@ function signup() {
         e.preventDefault();
         try {
             const response = await axios.post('/api/auth/sign-in', formData);
-            console.log(response);
+            // console.log(response);
             if (response.data.success) {
+                dispatch(setToken(response.data.token));
+                dispatch(setUser(response.data.loggedInUser));
                 toast({
                     title: "Success",
                     description: response.data.message,
