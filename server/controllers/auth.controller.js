@@ -68,6 +68,7 @@ export const signin = async (req,res,next) => {
         .json({
             success: true,
             message: "signin successfull",
+            token,
             loggedInUser
         })
     } 

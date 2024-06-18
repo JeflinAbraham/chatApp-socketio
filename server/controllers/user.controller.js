@@ -10,6 +10,7 @@ export const userDetails = async (req, res, next) => {
     }
     const userInfo = await getUserDetailsFromToken(token);
     res.status(200).json({
+        success: true,
         userInfo
     })
 }
@@ -20,7 +21,10 @@ export const signout = (req, res, next) => {
         res
             .clearCookie('access_token')
             .status(200)
-            .json('User has been signed out');
+            .json({
+                success: true,
+                message: "signout successfull"
+            });
     } catch (error) {
         return next(error);
     }

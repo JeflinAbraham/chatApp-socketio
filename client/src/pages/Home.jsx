@@ -28,7 +28,7 @@ function Home() {
 
 
   return (
-    <div>
+    <div className='h-screen'>
     <Sidebar></Sidebar>
     </div>
   )

@@ -30,7 +30,7 @@ export function AccountPopover() {
                                 <h3 className="text-lg font-semibold">{name}</h3>
                                 <p className="text-sm text-gray-600">{email}</p>
                                 <button
-                                    className='bg-blue-600 hover:bg-blue-700 px-2 rounded-lg text-white mt-2 outline-none'
+                                    className='bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded-lg text-white mt-2 outline-none'
                                     onClick={() => setEditUserOpen(true)}
                                 >
                                     Edit

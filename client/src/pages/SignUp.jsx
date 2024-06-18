@@ -5,7 +5,6 @@ import { Label } from '@/components/ui/label';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/components/ui/use-toast";
 import axios from 'axios'
-import { Variable } from 'lucide-react';
 
 function signup() {
     const [formData, setFormData] = useState({});
