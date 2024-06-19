@@ -5,6 +5,8 @@ import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.route.js'
 import userRoutes from './routes/user.route.js'
 
+import { app, server } from './socket/index.js';
+
 dotenv.config();
 
 mongoose.connect(process.env.MONGO_URI)
@@ -15,11 +17,13 @@ mongoose.connect(process.env.MONGO_URI)
     console.log("mongodb connection failed!!", err);
 })
 
-const app = express();
+// const app = express();
 app.use(express.json({limit:"16Kb"}));
 app.use(cookieParser());
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+
+
 
 // middleware to handle errors.
 app.use((err, req, res, next) => {
@@ -31,6 +35,6 @@ app.use((err, req, res, next) => {
         message
     });
 })
-app.listen(3000, () => {
+server.listen(3000, () => {
     console.log("listening at port 3000");
 })
