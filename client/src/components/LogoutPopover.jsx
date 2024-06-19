@@ -34,7 +34,7 @@ export function LogoutPopover() {
     };
 
     return (
-        <Popover open={isPopoverOpen}>
+        <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
             <PopoverTrigger asChild>
                 <button onClick={() => setIsPopoverOpen(!isPopoverOpen)}>
                     <LogOut size={18} />
