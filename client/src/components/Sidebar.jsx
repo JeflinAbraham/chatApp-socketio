@@ -4,10 +4,18 @@ import axios from 'axios';
 import { toast, useToast } from './ui/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { LogoutPopover } from './LogoutPopover';
+import { UserSearch } from 'lucide-react';
+import { useState } from 'react';
+import SearchUser from './SearchUser';
 
 const Sidebar = () => {
     const { toast } = useToast();
     const navigate = useNavigate();
+    const [searchUserOpen, setSearchUserOpen] = useState(false);
+
+    const handleSearchClick = () => {
+        setSearchUserOpen(true);
+    }
 
     return (
         <div className='w-full h-full bg-gray-400 flex'>
@@ -15,6 +23,7 @@ const Sidebar = () => {
             <div className='bg-blue-500 w-12 h-full py-4 text-white'>
                 <div className='flex flex-col gap-7 items-center justify-center'>
                     <AccountPopover></AccountPopover>
+                    <UserSearch className='cursor-pointer' onClick={handleSearchClick}></UserSearch>
                     <LogoutPopover></LogoutPopover>
                     
                 </div>
@@ -25,6 +34,11 @@ const Sidebar = () => {
                     <h1>Messages</h1>
                 </div>
             </div>
+            {
+                searchUserOpen && (
+                    <SearchUser onClose={() => setSearchUserOpen(false)}></SearchUser>
+                )
+            }
 
         </div>
     );

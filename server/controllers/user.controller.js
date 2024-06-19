@@ -51,7 +51,7 @@ export const updateUser = async (req, res, next) => {
         if (name.length < 3) {
             return next(errorHandler(400, 'Name must be at least 3 characters'));
         }
-        let updatedUser = await User.updateOne({ _id : user._id },{
+        let updatedUser = await User.updateOne({ _id: user._id }, {
             name,
             password: hashedPassword,
             profile_pic
@@ -69,5 +69,38 @@ export const updateUser = async (req, res, next) => {
 
     } catch (error) {
         next(errorHandler(400, "failed to update the user"));
+    }
+}
+
+
+
+export const searchUser = async (req, res) => {
+    try {
+        // This extracts the search term from the request body
+        const { search } = req.body;
+
+        /*
+        "i" is a flag for case-insensitive matching.
+        query variable is a regular expression object that will match the search term in a case-insensitive manner across the entire string. for example, if search term is 'john', it can match strings that contain 'john', 'JOHN', 'joHn' etc.
+        */
+        const query = new RegExp(search, "i");
+
+        const user = await User.find({
+            "$or": [
+                { name: query },
+                { email: query }
+            ]
+        }).select("-password")
+
+        return res.status(200).json({
+            success: true,
+            message: 'fetched matching users',
+            data: user
+        })
+    } catch (error) {
+        return response.status(500).json({
+            success: false,
+            message: "failed to search users",
+        })
     }
 }
