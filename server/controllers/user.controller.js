@@ -42,10 +42,12 @@ export const updateUser = async (req, res, next) => {
         const { name, password, profile_pic } = req.body;
 
         //update password
-        if (password.length < 6) {
-            return next(errorHandler(400, 'Password must be at least 6 characters'));
+        if(password){
+            if (password.length < 6) {
+                return next(errorHandler(400, 'Password must be at least 6 characters'));
+            }
+            req.body.password = bcryptjs.hashSync(req.body.password, 10);
         }
-        const hashedPassword = bcryptjs.hashSync(password, 10);
 
         //update name
         if (name.length < 3) {
@@ -53,7 +55,7 @@ export const updateUser = async (req, res, next) => {
         }
         let updatedUser = await User.updateOne({ _id: user._id }, {
             name,
-            password: hashedPassword,
+            password: req.body.password,
             profile_pic
         })
 
@@ -68,7 +70,7 @@ export const updateUser = async (req, res, next) => {
 
 
     } catch (error) {
-        next(errorHandler(400, "failed to update the user"));
+        next(errorHandler(400, "failed to update the userrr"));
     }
 }
 
