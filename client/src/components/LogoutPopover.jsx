@@ -50,13 +50,13 @@ export function LogoutPopover() {
                     <div className="flex items-center justify-center gap-x-3">
                         <button
                             onClick={handleLogout}
-                            className="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded-lg text-white mt-2 outline-none"
+                            className="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-lg text-white mt-2 outline-none"
                         >
                             Yes
                         </button>
                         <button
                             onClick={() => setIsPopoverOpen(false)}
-                            className="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded-lg text-white mt-2 outline-none"
+                            className="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-lg text-white mt-2 outline-none"
                         >
                             No
                         </button>

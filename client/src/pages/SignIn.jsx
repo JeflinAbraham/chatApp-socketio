@@ -51,21 +51,23 @@ function signup() {
 
                 <div className='mt-4'>
                     <Label className="text-gray-700">Email</Label>
-                    <Input
+                    <input
                         type="text"
                         id="email"
                         placeholder="Enter your email"
                         onChange={handleChange}
+                        className='w-full p-2 border border-slate-300 rounded focus:outline-none'
                     />
                 </div>
 
                 <div className="mt-4">
                     <Label className="text-gray-700">Password</Label>
-                    <Input
+                    <input
                         type="password"
                         id="password"
                         placeholder="Enter your password"
                         onChange={handleChange}
+                        className='w-full p-2 border border-slate-300 rounded focus:outline-none'
                     />
                 </div>
 

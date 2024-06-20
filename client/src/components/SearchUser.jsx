@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Search } from 'lucide-react';
 import { X } from 'lucide-react';
-import ClipLoader from "react-spinners/ClipLoader";
 import UserSearchCard from './UserSearchCard';
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useToast } from './ui/use-toast';
@@ -78,17 +77,7 @@ const SearchUser = ({ onClose }) => {
                         )
                     }
 
-                    {
-                        loading && (
-                            <ClipLoader
-                                color="#ffffff"
-                                loading={loading}
-                                size={150}
-                                aria-label="Loading Spinner"
-                                data-testid="loader"
-                            />
-                        )
-                    }
+                    {/* add loader */}
 
                     {
                         searchUser.length !== 0 && !loading && (
@@ -100,9 +89,9 @@ const SearchUser = ({ onClose }) => {
                             <ScrollArea className="h-[500px] w-[450px] rounded-md border">
                                 <div className="p-4">
                                     {searchUser.map((user, index) => (
-                                        <>
-                                            <UserSearchCard key={index} user={user} onClose={onClose} />
-                                        </>
+                                        <div key={index}>
+                                            <UserSearchCard  user={user} onClose={onClose} />
+                                        </div>
                                     ))}
                                 </div>
                             </ScrollArea>

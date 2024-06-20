@@ -56,7 +56,7 @@ export const updateUser = async (req, res, next) => {
         let updatedUser = await User.updateOne({ _id: user._id }, {
             name,
             password: req.body.password,
-            profile_pic
+            profile_pic: req.body.profile_pic
         })
 
         // updated user information.

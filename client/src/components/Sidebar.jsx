@@ -18,9 +18,9 @@ const Sidebar = () => {
     }
 
     return (
-        <div className='w-full h-full bg-gray-400 flex'>
+        <div className='h-full bg-gray-400 flex'>
             {/* leftmost mini panel */}
-            <div className='bg-blue-500 w-12 h-full py-4 text-white'>
+            <div className='bg-blue-700 w-12 h-full py-4 text-white'>
                 <div className='flex flex-col gap-7 items-center justify-center'>
                     <AccountPopover></AccountPopover>
                     <UserSearch className='cursor-pointer' onClick={handleSearchClick}></UserSearch>

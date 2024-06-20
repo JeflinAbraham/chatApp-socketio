@@ -213,14 +213,14 @@ function MessagePage() {
             <div className='bg-gray-400 w-full h-[622px]'>
 
                 {loading && (
-                    <Loader className="text-blue-600 animate-spin ml-[520px] fixed mt-64" size={50} />
+                    <Loader className="text-blue-600 animate-spin ml-[520px] fixed mt-64 z-50" size={50} />
                 )}
 
 
                 {/* upload image display */}
                 {
                     message.imageUrl && (
-                        <div className='fixed inset-0 bg-black bg-opacity-55 flex justify-center items-center z-50'>
+                        <div className='fixed inset-0 bg-black bg-opacity-65 flex justify-center items-center z-40'>
                             <div className='bg-white py-20 ml-[360px] w-96 relative'>
                                 <div className='absolute top-0 right-0 cursor-pointer text-white p-1' onClick={handleClearUploadImage}>
                                     <X className='bg-red-500 p-1 hover:bg-red-700' size={35} />
@@ -237,7 +237,7 @@ function MessagePage() {
                 {/* upload video display */}
                 {
                     message.videoUrl && (
-                        <div className='fixed inset-0 bg-black bg-opacity-55 flex justify-center items-center z-50'>
+                        <div className='fixed inset-0 bg-black bg-opacity-65 flex justify-center items-center z-50'>
                             <div className='bg-white py-20 ml-[360px] w-96 relative'>
                                 <div className='absolute top-0 right-0 cursor-pointer text-white p-1' onClick={handleClearUploadVideo}>
                                     <X className='bg-red-500 p-1 hover:bg-red-700' size={35} />
@@ -265,6 +265,23 @@ function MessagePage() {
                                         className={`flex flex-col mb-2 p-3 rounded-lg shadow-md text-black shadow-black w-fit ${user._id === msg.msgByUserId ? "items-end ml-auto bg-blue-700 text-white" : "bg-white items-start"}`}
 
                                     >
+                                        {
+                                            msg.imageUrl && (
+                                                <img
+                                                    src={msg.imageUrl}
+                                                    className='w-80 h-60 object-scale-down'
+                                                />
+                                            )
+                                        }
+                                        {
+                                            msg.videoUrl && (
+                                                <video
+                                                    src={msg.videoUrl}
+                                                    className='w-80 h-60 object-scale-down'
+                                                    controls
+                                                />
+                                            )
+                                        }
                                         <p>{msg.text}</p>
                                         <p className={`text-xs  ${user._id == msg.msgByUserId ? "text-gray-300" : "text-gray-400"}`}> {moment(msg.createdAt).format('LT')} </p>
                                     </div>
@@ -285,7 +302,7 @@ function MessagePage() {
             <div className='w-full h-16 flex items-center justify-center gap-x-1'>
                 {/* left side button */}
                 <DropdownMenu>
-                    <DropdownMenuTrigger ><Plus className="bg-blue-700 hover:bg-blue-700 text-white rounded-full ml-1 p-2" size={50} /></DropdownMenuTrigger>
+                    <DropdownMenuTrigger className='outline-none' ><Plus className="bg-blue-700 hover:bg-blue-700 text-white rounded-full ml-1 p-2" size={50} /></DropdownMenuTrigger>
                     <DropdownMenuContent >
                         <DropdownMenuItem onClick={() => imagePickRef.current.click()}>
                             <Image className="mr-2 h-4 w-4" />
@@ -306,7 +323,7 @@ function MessagePage() {
                         value={message.text}
                         onChange={handleTextChange}
                     />
-                    <button type='submit' className='bg-blue-700 text-lg text-white py-1 px-4 rounded-lg'><SendHorizonal /></button>
+                    <button type='submit' className='bg-blue-700 text-lg text-white py-1 px-4 rounded-lg z-50'><SendHorizonal /></button>
                 </form>
             </div>
         </div>

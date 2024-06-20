@@ -22,6 +22,7 @@ const messageSchema = new mongoose.Schema({
         default: false
     },
 
+    // sender
     msgByUserId: {
         type: mongoose.Schema.ObjectId,
         ref: 'User',

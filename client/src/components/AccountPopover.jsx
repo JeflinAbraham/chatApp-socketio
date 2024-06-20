@@ -20,7 +20,7 @@ export function AccountPopover() {
         <div>
             <Popover>
                 <PopoverTrigger asChild>
-                    <User size={18} />
+                    <User className='cursor-pointer' size={24} />
                 </PopoverTrigger>
                 {
                     !editUserOpen && (<PopoverContent className="w-80">

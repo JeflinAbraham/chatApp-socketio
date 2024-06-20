@@ -38,7 +38,7 @@ function Home() {
     // 1. The URL of the Socket.io server (http://localhost:3000 in this case).
     // 2. An options object. In this case, the options object has a single property called auth, this auth object has a single property called token, which is sent to the server as part of the socket connection handshake. 
     const socketConnection = io('http://localhost:3000', {
-      auth: {
+      auth: { 
         token: token
       },
     })
@@ -46,7 +46,7 @@ function Home() {
 
     // This listener function is called whenever the server emits an onlineUser event, and it receives the event payload data as a callback() argument which contains the list of online users. 
     socketConnection.on('onlineUser', (data) => {
-      console.log(data);
+      // console.log(data);
       dispatch(setOnlineUser(data));
     })
 
