@@ -164,6 +164,14 @@ function MessagePage() {
         }
     }
 
+    const scrollRef = useRef(null);
+    const scrollToBottom = () => {
+        scrollRef.current.scrollIntoView(false);
+    }
+    useEffect(() => {
+        scrollToBottom();
+    }, [allMessages]);
+
     return (
         <div>
             <input
@@ -247,24 +255,25 @@ function MessagePage() {
                 }
 
                 {/**all message show here */}
-                <ScrollArea className="h-[620px] w-[1120px] bg-gray-400 p-3">
-                    <div className="p-2">
+                <ScrollArea className="h-[620px] w-[1120px] bg-gray-400 p-3 ">
+                    <div className="p-2" ref={scrollRef}>
                         {
                             allMessages.map((msg, index) => {
                                 return (
                                     <div
                                         key={index}
-                                        className={`flex flex-col mb-2 p-3 rounded-lg shadow-md text-white shadow-black w-fit ${user._id === msg?.msgByUserId ? "items-end ml-auto bg-blue-700" : "bg-white text-black items-start"}`}
-                                
+                                        className={`flex flex-col mb-2 p-3 rounded-lg shadow-md text-black shadow-black w-fit ${user._id === msg.msgByUserId ? "items-end ml-auto bg-blue-700 text-white" : "bg-white items-start"}`}
+
                                     >
                                         <p>{msg.text}</p>
-                                        <p className={`text-xs  ${user._id == msg.msgByUserId ? "text-gray-300":"text-gray-400"}`}> {moment(msg.createdAt).format('LT')} </p>
+                                        <p className={`text-xs  ${user._id == msg.msgByUserId ? "text-gray-300" : "text-gray-400"}`}> {moment(msg.createdAt).format('LT')} </p>
                                     </div>
                                 );
                             })
                         }
                     </div>
                 </ScrollArea>
+
 
 
             </div>
