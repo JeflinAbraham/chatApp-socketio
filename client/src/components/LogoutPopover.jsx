@@ -8,16 +8,20 @@ import { toast, useToast } from "./ui/use-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { logout } from "@/redux/userSlice";
 
 export function LogoutPopover() {
     const { toast } = useToast();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
     const handleLogout = async () => {
         try {
             const response = await axios.post('/api/user/sign-out');
             if (response.data.success) {
+                dispatch(logout());
                 toast({
                     title: 'Success',
                     description: response.data.message,
@@ -37,7 +41,7 @@ export function LogoutPopover() {
         <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
             <PopoverTrigger asChild>
                 <button onClick={() => setIsPopoverOpen(!isPopoverOpen)}>
-                    <LogOut size={18} />
+                    <LogOut className='cursor-pointer' size={24} />
                 </button>
             </PopoverTrigger>
             <PopoverContent className="w-80">
