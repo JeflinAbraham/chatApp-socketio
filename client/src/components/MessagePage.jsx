@@ -13,7 +13,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Plus, Image, Video, X } from 'lucide-react';
+import { Plus, Image, Video, X, Loader, SendHorizonal } from 'lucide-react';
 
 // file upload: refer docs from firebase->storage->web->upload files 
 import { app } from "@/firebase.js";
@@ -23,14 +23,16 @@ import {
     ref,
     uploadBytesResumable,
 } from 'firebase/storage';
+import moment from 'moment';
 
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 
 
 
 
 function MessagePage() {
-
+    const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState({
         text: "",
         imageUrl: "",
@@ -49,10 +51,14 @@ function MessagePage() {
     const handleVideoChange = (e) => {
         const file = e.target.files[0];
         // console.log(videoFile);
-        if(file){
+        if (file) {
             setVideoFile(file);
         }
     }
+    const handleTextChange = (e) => {
+        setMessage((prev) => ({ ...prev, text: e.target.value }))
+    }
+
     useEffect(() => {
         if (imageFile || videoFile) {
             uploadFile();
@@ -60,30 +66,37 @@ function MessagePage() {
     }, [imageFile, videoFile]);
 
     const uploadFile = async () => {
-        const storage = getStorage(app);
-        const fileName = new Date().getTime() + (imageFile?.name || videoFile?.name);
-        const storageRef = ref(storage, fileName);
-        const uploadTask = uploadBytesResumable(storageRef, imageFile || videoFile);
-        uploadTask.on(
-            'state_changed',
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log(progress);
-            },
-            (error) => {
-                console.log(error);
-            },
-            () => {
-                getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
-                    if(imageFile) setMessage((prev) => ({ ...prev, imageUrl: downloadUrl }));
-                    if(videoFile) setMessage((prev) => ({...prev, videoUrl: downloadUrl}));
-                    console.log("image url: ", message.imageUrl);
-                    console.log("video url: ", message.videoUrl);
-                })
-            })
-
+        try {
+            setLoading(true);
+            const storage = getStorage(app);
+            const fileName = new Date().getTime() + (imageFile?.name || videoFile?.name);
+            const storageRef = ref(storage, fileName);
+            const uploadTask = uploadBytesResumable(storageRef, imageFile || videoFile);
+            uploadTask.on(
+                'state_changed',
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log(progress);
+                },
+                (error) => {
+                    console.log(error);
+                },
+                async () => {
+                    await getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
+                        if (imageFile) setMessage((prev) => ({ ...prev, imageUrl: downloadUrl }));
+                        if (videoFile) setMessage((prev) => ({ ...prev, videoUrl: downloadUrl }));
+                        console.log("image url: ", message.imageUrl);
+                        console.log("video url: ", message.videoUrl);
+                    });
+                    setLoading(false);
+                }
+            )
+        }
+        catch (error) {
+            console.log(error);
+            setLoading(false);
+        }
     }
-
     const handleClearUploadImage = () => {
         setMessage((prev) => ({ ...prev, imageUrl: "" }))
         setImageFile(null);
@@ -93,8 +106,10 @@ function MessagePage() {
         setVideoFile(null);
     }
 
+
     const params = useParams();
     const socketConnection = useSelector(state => state.user.socketConnection);
+    const user = useSelector(state => state.user)
     const [userData, setUserData] = useState({
         name: "",
         email: "",
@@ -102,21 +117,52 @@ function MessagePage() {
         online: false,
         _id: ""
     })
-
+    const [allMessages, setAllMessage] = useState([]);
 
     // why .userid? check App.jsx paths.
     // console.log(params.userid);
 
     useEffect(() => {
         if (socketConnection) {
-            socketConnection.emit('message-page', params.userid)
+            // fontend backend ko bol rha h ki tu 'message-page' pe listen kar, u ll recive a params.userid.
+            socketConnection.emit('message-page', params.userid);
+
             socketConnection.on('message-user', (data) => {
                 // console.log("message-user ", data); 
                 setUserData(data);
             })
+
+            // when this message event is triggered, client recieves the conversation data.
+            socketConnection.on('message', (data) => {
+                console.log('message data: ', data);
+                setAllMessage(data);
+            })
         }
     }, [socketConnection, params.userid])
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (message.text || message.imageUrl || message.videoUrl) {
+            if (socketConnection) {
+                // client server ko bol rha, bhaii tu 'new-message' pe listen kar, meii terko data bhej rha.
+                socketConnection.emit('new-message', {
+                    sender: user?._id,
+                    receiver: params.userid,
+                    text: message.text,
+                    imageUrl: message.imageUrl,
+                    videoUrl: message.videoUrl,
+                    msgByUserId: user?._id
+                })
+
+                // after the message is send to the server, clear the input text box, img/vid urls.
+                setMessage({
+                    text: "",
+                    imageUrl: "",
+                    videoUrl: ""
+                })
+            }
+        }
+    }
 
     return (
         <div>
@@ -157,6 +203,12 @@ function MessagePage() {
             </header>
 
             <div className='bg-gray-400 w-full h-[622px]'>
+
+                {loading && (
+                    <Loader className="text-blue-600 animate-spin ml-[520px] fixed mt-64" size={50} />
+                )}
+
+
                 {/* upload image display */}
                 {
                     message.imageUrl && (
@@ -173,6 +225,7 @@ function MessagePage() {
                         </div>
                     )
                 }
+
                 {/* upload video display */}
                 {
                     message.videoUrl && (
@@ -192,15 +245,38 @@ function MessagePage() {
                         </div>
                     )
                 }
+
+                {/**all message show here */}
+                <ScrollArea className="h-[620px] w-[1120px] bg-gray-400 p-3">
+                    <div className="p-2">
+                        {
+                            allMessages.map((msg, index) => {
+                                return (
+                                    <div
+                                        key={index}
+                                        className={`flex flex-col mb-2 p-3 rounded-lg shadow-md text-white shadow-black w-fit ${user._id === msg?.msgByUserId ? "items-end ml-auto bg-blue-700" : "bg-white text-black items-start"}`}
+                                
+                                    >
+                                        <p>{msg.text}</p>
+                                        <p className={`text-xs  ${user._id == msg.msgByUserId ? "text-gray-300":"text-gray-400"}`}> {moment(msg.createdAt).format('LT')} </p>
+                                    </div>
+                                );
+                            })
+                        }
+                    </div>
+                </ScrollArea>
+
+
             </div>
 
 
 
 
-            {/* send messages */}
-            <div className='w-full h-16'>
+            {/* send messages*/}
+            <div className='w-full h-16 flex items-center justify-center gap-x-1'>
+                {/* left side button */}
                 <DropdownMenu>
-                    <DropdownMenuTrigger ><Plus className="bg-blue-500 hover:bg-blue-700 text-white rounded-full mt-2 ml-1 p-2" size={50} /></DropdownMenuTrigger>
+                    <DropdownMenuTrigger ><Plus className="bg-blue-700 hover:bg-blue-700 text-white rounded-full ml-1 p-2" size={50} /></DropdownMenuTrigger>
                     <DropdownMenuContent >
                         <DropdownMenuItem onClick={() => imagePickRef.current.click()}>
                             <Image className="mr-2 h-4 w-4" />
@@ -212,9 +288,32 @@ function MessagePage() {
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
+
+                <form onSubmit={handleSubmit} className='flex gap-x-1'>
+                    <input
+                        type="text"
+                        className='w-[988px] h-[45px] rounded-lg p-2 border-2 border-blue-500 outline-none'
+                        placeholder='Type here...'
+                        value={message.text}
+                        onChange={handleTextChange}
+                    />
+                    <button type='submit' className='bg-blue-700 text-lg text-white py-1 px-4 rounded-lg'><SendHorizonal /></button>
+                </form>
             </div>
         </div>
     )
 }
 
 export default MessagePage
+
+
+
+
+
+
+
+{/*
+
+
+
+*/}
