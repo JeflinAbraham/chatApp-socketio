@@ -49,7 +49,7 @@ const SearchUser = ({ onClose }) => {
 
     return (
         <div className='fixed top-0 bottom-0 left-0 right-0 bg-slate-700 bg-opacity-65 p-2 z-10'>
-            <div className='w-full max-w-lg mx-auto mt-10'>
+            <div className='w-full max-w-lg mx-auto mt-24 ml-[440px] relative'>
                 {/*input search user */}
                 <div className='bg-white rounded h-14 overflow-hidden flex '>
                     <input
@@ -99,9 +99,9 @@ const SearchUser = ({ onClose }) => {
                             // })
                             <ScrollArea className="h-[500px] w-[450px] rounded-md border">
                                 <div className="p-4">
-                                    {searchUser.map((user) => (
+                                    {searchUser.map((user, index) => (
                                         <>
-                                            <UserSearchCard key={user._id} user={user} onClose={onClose} />
+                                            <UserSearchCard key={index} user={user} onClose={onClose} />
                                         </>
                                     ))}
                                 </div>
@@ -112,13 +112,13 @@ const SearchUser = ({ onClose }) => {
 
 
                 </div>
+                <div className='absolute top-[-50px] right-[-7px] text-2xl p-2 lg:text-4xl text-white' onClick={onClose}>
+                    <button>
+                        <X className='bg-red-500 p-1 hover:bg-red-700' size={35} />
+                    </button>
+                </div>
             </div>
 
-            <div className='absolute top-0 right-0 text-2xl p-2 lg:text-4xl hover:text-white' onClick={onClose}>
-                <button>
-                    <X />
-                </button>
-            </div>
         </div>
     )
 }
