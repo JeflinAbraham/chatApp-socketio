@@ -85,10 +85,10 @@ function MessagePage() {
                     await getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
                         if (imageFile) setMessage((prev) => ({ ...prev, imageUrl: downloadUrl }));
                         if (videoFile) setMessage((prev) => ({ ...prev, videoUrl: downloadUrl }));
-                        console.log("image url: ", message.imageUrl);
-                        console.log("video url: ", message.videoUrl);
                     });
                     setLoading(false);
+                    setImageFile(null);
+                    setVideoFile(null);
                 }
             )
         }
@@ -110,6 +110,8 @@ function MessagePage() {
     const params = useParams();
     const socketConnection = useSelector(state => state.user.socketConnection);
     const user = useSelector(state => state.user)
+
+    // recievers data.
     const [userData, setUserData] = useState({
         name: "",
         email: "",
@@ -127,6 +129,7 @@ function MessagePage() {
             // fontend backend ko bol rha h ki tu 'message-page' pe listen kar, u ll recive a params.userid.
             socketConnection.emit('message-page', params.userid);
 
+            // the details of the reciever is send to us by the backend server.
             socketConnection.on('message-user', (data) => {
                 // console.log("message-user ", data); 
                 setUserData(data);
@@ -318,7 +321,7 @@ function MessagePage() {
                 <form onSubmit={handleSubmit} className='flex gap-x-1'>
                     <input
                         type="text"
-                        className='w-[988px] h-[45px] rounded-lg p-2 border-2 border-blue-500 outline-none'
+                        className='w-[988px] h-[45px] rounded-lg p-2 border-2 border-blue-500 outline-none z-50'
                         placeholder='Type here...'
                         value={message.text}
                         onChange={handleTextChange}

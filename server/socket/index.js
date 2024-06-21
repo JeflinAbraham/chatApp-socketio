@@ -7,6 +7,7 @@ const app = express();
 import { getUserDetailsFromToken } from '../utils/getUserDetailsFromToken.js';
 import { User } from "../models/user.model.js";
 import { Conversation, Message } from "../models/conversation.model.js";
+import { getConversation } from "../utils/GetConversation.js";
 
 // step1: create an http server using the express app.
 const server = createServer(app);
@@ -50,7 +51,6 @@ io.on('connection', async (socket) => {
 
     // server is listening to 'message-page' event listener, it will recive a userid from the client.
     socket.on('message-page', async (userId) => {
-        console.log('userId', userId)
         const userDetails = await User.findById(userId).select("-password")
 
         const payload = {
@@ -62,9 +62,24 @@ io.on('connection', async (socket) => {
         }
 
         // server client ko bol rha h ki tu 'message-user' pe listen kar, u ll recive a payload.
-        socket.emit('message-user', payload)
+        socket.emit('message-user', payload);
+
+        //get previous message
+        const getConversationMessage = await Conversation.findOne({
+            "$or": [
+                { sender: user?._id, receiver: userId },
+                { sender: userId, receiver: user?._id }
+            ]
+        }).populate('messages')
+
+        socket.emit('message', getConversationMessage?.messages || [])
     })
 
+
+
+
+
+    // new message
     socket.on('new-message', async (data) => {
         // console.log("new message: ", data);
 
@@ -113,8 +128,27 @@ io.on('connection', async (socket) => {
         console.log("conversation message: ", getConversationMessage);
 
         // send the messages to the respective clients identified by their IDs.
-        io.to(data.sender).emit('message',getConversationMessage.messages || [])
-        io.to(data.receiver).emit('message',getConversationMessage.messages || [])
+        io.to(data.sender).emit('message', getConversationMessage.messages || [])
+        io.to(data.receiver).emit('message', getConversationMessage.messages || [])
+
+        // send
+        const conversationSender = await getConversation(data?.sender)
+        const conversationReceiver = await getConversation(data?.receiver)
+
+        io.to(data?.sender).emit('conversation', conversationSender)
+        io.to(data?.receiver).emit('conversation', conversationReceiver)
+
+    })
+
+    //sidebar
+    socket.on('sidebar', async (currentUserId) => {
+        console.log("current user ka id: ", currentUserId);
+
+        // this function generates all the conversations of this user (iss user ki aaj tak jisse bhi baat hui h chat pe, woh saare docs) along with the no of unseen messages, last message with every user.
+        const conversation = await getConversation(currentUserId);
+        console.log("my conversation: ", conversation);
+
+        socket.emit('conversation', conversation);
 
     })
 
