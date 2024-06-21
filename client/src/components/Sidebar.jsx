@@ -17,7 +17,13 @@ const Sidebar = () => {
     const [searchUserOpen, setSearchUserOpen] = useState(false);
     const socketConnection = useSelector((state) => state.user.socketConnection);
     const user = useSelector((state) => state.user);
+    const params = useParams();
     const [allUser, setAllUser] = useState([])
+
+    const [activeChatId, setActiveChatId] = useState(null);
+    useEffect(() => {
+        setActiveChatId(params.userid);
+    }, [params.userid]);
 
     const handleSearchClick = () => {
         setSearchUserOpen(true);
@@ -80,40 +86,40 @@ const Sidebar = () => {
                         {
                             allUser.map((conv, index) => (
                                 <div key={index} >
-                                <Link to={"/" + conv.userDetails._id}>
-                                <div className='flex justify-between hover:bg-gray-200 p-2'>
-                                    <div className='flex items-start gap-2 mb-1'>
-                                        <img
-                                            src={conv.userDetails.profile_pic}
-                                            className='w-12 h-12 rounded-full'
-                                        />
-                                        <div className='flex flex-col'>
-                                            <span className='text-blue-700 font-medium '>{conv.userDetails.name}</span>
+                                    <Link to={"/" + conv.userDetails._id}>
+                                        <div className={`flex justify-between ${activeChatId === conv.userDetails._id && "bg-gray-200"} hover:bg-gray-200 p-2`}>
+                                            <div className='flex items-start gap-2 mb-1'>
+                                                <img
+                                                    src={conv.userDetails.profile_pic}
+                                                    className='w-12 h-12 rounded-full'
+                                                />
+                                                <div className='flex flex-col'>
+                                                    <span className='text-blue-700 font-medium '>{conv.userDetails.name}</span>
 
-                                            {
-                                                conv.lastMsg.imageUrl ? (
-                                                    <div className='flex text-sm gap-1'>
-                                                        <Image className='text-gray-400 mt-[2px]' size={18} />
-                                                        <span>Image</span>
-                                                    </div>
-                                                ) : conv.lastMsg.videoUrl ? (
-                                                    <div className='flex items-center text-sm gap-1'>
-                                                        <Video className='text-gray-400 mt-[2px]' size={18} />
-                                                        <span>Video</span>
-                                                    </div>
-                                                ) : (
-                                                    <span className='text-sm w-[205px] line-clamp-1'>{conv.lastMsg.text}</span>
-                                                )
+                                                    {
+                                                        conv.lastMsg.imageUrl ? (
+                                                            <div className='flex text-sm gap-1'>
+                                                                <Image className='text-gray-400 mt-[2px]' size={18} />
+                                                                <span>Image</span>
+                                                            </div>
+                                                        ) : conv.lastMsg.videoUrl ? (
+                                                            <div className='flex items-center text-sm gap-1'>
+                                                                <Video className='text-gray-400 mt-[2px]' size={18} />
+                                                                <span>Video</span>
+                                                            </div>
+                                                        ) : (
+                                                            <span className='text-sm w-[205px] line-clamp-1'>{conv.lastMsg.text}</span>
+                                                        )
+                                                    }
+                                                </div>
+                                            </div>
+                                            {conv.unseenMsg > 0 &&
+                                                (<div className='bg-blue-500 w-7 h-7 rounded-full text-white text-center'>
+                                                    {conv.unseenMsg}
+                                                </div>)
                                             }
                                         </div>
-                                    </div>
-                                    {conv.unseenMsg > 0 &&
-                                    (<div className='bg-blue-500 w-7 h-7 rounded-full text-white text-center'>
-                                        {conv.unseenMsg}
-                                    </div>)
-                                    }
-                                </div>
-                                </Link>
+                                    </Link>
                                     <hr></hr>
                                 </div>
                             ))
