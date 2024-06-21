@@ -129,10 +129,13 @@ function MessagePage() {
             // fontend backend ko bol rha h ki tu 'message-page' pe listen kar, u ll recive a params.userid.
             socketConnection.emit('message-page', params.userid);
 
+            socketConnection.emit('seen',params.userid)
+
             // the details of the reciever is send to us by the backend server.
             socketConnection.on('message-user', (data) => {
                 // console.log("message-user ", data); 
                 setUserData(data);
+                console.log(data.profile_pic);
             })
 
             // when this message event is triggered, client recieves the conversation data.

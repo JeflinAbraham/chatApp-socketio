@@ -67,6 +67,7 @@ const EditUserDetails = ({ onClose, user }) => {
                 async () => {
                     await getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
                         setImageFileUrl(downloadUrl);
+                        setFormData((prev) => ({...prev, profile_pic: downloadUrl}));
                     });
                     setLoading(false);
                 }
@@ -80,7 +81,7 @@ const EditUserDetails = ({ onClose, user }) => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            const response = await axios.post('/api/user/update-user', { ...formData, profile_pic: imageFileUrl || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" });
+            const response = await axios.post('/api/user/update-user', formData);
             if (response.data.success) {
                 toast({
                     title: "success",
@@ -143,7 +144,7 @@ const EditUserDetails = ({ onClose, user }) => {
                                 ) :
                                 (
                                     <img
-                                        src={imageFileUrl || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"}
+                                        src={imageFileUrl || formData.profile_pic}
                                         className='w-16 h-16 rounded'
                                         onClick={() => imagePickRef.current.click()}
                                     />

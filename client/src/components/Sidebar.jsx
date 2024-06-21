@@ -44,7 +44,7 @@ const Sidebar = () => {
                             userDetails: convDoc.sender
                         }
                     }
-                    else if (convDoc.receiver._id !== user._id) {
+                    else if (user._id !== convDoc.receiver._id) {
                         return {
                             ...convDoc,
                             userDetails: convDoc.receiver
@@ -66,7 +66,7 @@ const Sidebar = () => {
     }, [socketConnection, user])
 
     return (
-        <div className='h-full bg-gray-400 flex'>
+        <div className='h-screen bg-gray-400 flex'>
             {/* leftmost mini panel */}
             <div className='bg-blue-700 w-12 h-full py-4 text-white'>
                 <div className='flex flex-col gap-7 items-center justify-center'>
@@ -77,7 +77,8 @@ const Sidebar = () => {
                 </div>
             </div>
 
-            <div className='bg-slate-100 w-80 h-full py-2 text-slate-600'>
+            {/* all chats panel */}
+            <div className='bg-slate-100 w-80 min-h-screen py-2 text-slate-600'>
                 <div className='flex items-center justify-center py-2 font-semibold text-2xl border-b border-blue-500'>
                     <h1>Messages</h1>
                 </div>

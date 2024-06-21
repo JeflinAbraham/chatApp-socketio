@@ -53,10 +53,11 @@ export const updateUser = async (req, res, next) => {
         if (name.length < 3) {
             return next(errorHandler(400, 'Name must be at least 3 characters'));
         }
+        
         let updatedUser = await User.updateOne({ _id: user._id }, {
             name,
             password: req.body.password,
-            profile_pic: req.body.profile_pic
+            profile_pic
         })
 
         // updated user information.

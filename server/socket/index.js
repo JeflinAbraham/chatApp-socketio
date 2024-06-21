@@ -140,7 +140,7 @@ io.on('connection', async (socket) => {
 
     })
 
-    //sidebar
+    // sidebar
     socket.on('sidebar', async (currentUserId) => {
         console.log("current user ka id: ", currentUserId);
 
@@ -150,6 +150,31 @@ io.on('connection', async (socket) => {
 
         socket.emit('conversation', conversation);
 
+    })
+
+    // seen users
+    socket.on('seen', async (msgByUserId) => {
+
+        let conversation = await Conversation.findOne({
+            "$or": [
+                { sender: user?._id, receiver: msgByUserId },
+                { sender: msgByUserId, receiver: user?._id }
+            ]
+        })
+
+        const conversationMessageId = conversation?.messages || []
+
+        const updateMessages = await Message.updateMany(
+            { _id: { "$in": conversationMessageId }, msgByUserId: msgByUserId },
+            { "$set": { seen: true } }
+        )
+
+        //send conversation
+        const conversationSender = await getConversation(user?._id?.toString())
+        const conversationReceiver = await getConversation(msgByUserId)
+
+        io.to(user?._id?.toString()).emit('conversation', conversationSender)
+        io.to(msgByUserId).emit('conversation', conversationReceiver)
     })
 
 
